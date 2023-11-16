@@ -89,6 +89,9 @@ This review embarks on a journey to explore the multifaceted landscape of surviv
 
 As we advance in this ever-evolving field, the fusion of digital pathology with survival prediction promises to unravel the intricacies of disease dynamics, enhance patient care, and pave the way for a new era of data-driven medicine.
 
+
+
+
 \section{FORMULATION OF SURVIVAL PREDICTION}
 \subsection{Region of Interest}
 
@@ -96,10 +99,30 @@ As we advance in this ever-evolving field, the fusion of digital pathology with 
 
 \section{Methodology}
 \subsection{Region of Interest}
+
+
 There exist many methods developed for predicting survival through the information provided by the whole slide images(WSIs).
 Rather than utilizing the overall patches from the gigapixel pathology images, the traditional models usually pre-select a subset of critical patches from the region of interest (ROI) as the input data.
 Apart from the features extracted from ROIs with the deep neural networks(DNNs), some morphological features of the image patches can be extracted and accessed by the image analysis software named CellProfiler\cite{lamprecht2007cellprofiler}, commonly used for cell phenotypes measurements at that time.
 It's the features including cell shape, size, the distribution of pixel intensity in the cells and nuclei and texture of cells and nuclei that the quantitative analysis tool can extract.
+
+%公式部分
+
+Traditional survival analysis involves predicting the duration before a specific event occurs, which assumes that the duration follows an unknown distribution. Among popular modeling methods, the Cox proportional risk model is widely used. This model focuses on hazard modeling rather than survival functions:
+
+$h(t|x) = h_0(t) \exp(\beta^Tx)$
+
+where:
+\begin{align*}
+& h(t|x) \text{ is the hazard function at time } t \text{ given covariates } x, \\
+& h_0(t) \text{ is the baseline hazard function, representing the hazard when } x = 0, \\
+& \beta \text{ is a vector of coefficients,} \\
+& x \text{ is a vector of covariates.}
+\end{align*}
+
+
+$\begin{aligned}l(\beta)&=-\sum_{i=1}^n\delta_i\left(\beta^Tx_i-log\sum_{j\in R(t_i)}exp(\beta^Tx_j)\right),\end{aligned}$
+
 
 % DeepConvSurv
 % To evaluate whether
@@ -214,7 +237,6 @@ Finally, these two types of global features are fused to evaluate their prognost
 The proposed method demonstrated higher robustness compared to individual global features. 
 Moreover, this comprehensive framework holds potential for predicting survival and treatment responses in other cancer malignancies.
 
-
 %HVTSurv
 In this work, they proposed a hierarchical visual converter (HVTSurv)\cite{shao2023hvtsurv}for predicting patient horizontal survival, which gradually explores the local horizontal space, WSI horizontal context, and patient level hierarchical interaction in the patient level package. For each WSI, the local level interaction layer will first encode the local spatial information. Then, spatial mixing is applied to make the model perform similarity calculations on features in different local windows. Finally, all WSI level features will be connected to perform attention pooling, and we use patient level representations to predict the patient's risk of danger. It is worth noting that in the local window block, this method adds relative position offset to the self attention calculation and uses Manhattan distance to measure distance,it can make the model more sensitive to short rather than long distances\cite{wu2021rethinking}. In the shuffling window block, this method shuffles patient features in different local windows, and then performs window partitioning and self attention calculations.
 
@@ -225,7 +247,7 @@ They prposed kernel attention Transformer (KAT)\cite{zheng2023kernel} . Compared
 Inspired by the potent multi-head attention mechanism initially introduced in the transformer\cite{jiang2023mhattnsurv} model, the researchers innovatively adapted this mechanism to function efficiently in the realm of multiple instance learning. Specifically, the transformer model's core function is to learn context-sensitive representations for every element within an input sequence. However, this necessitates attention between every pair of elements, leading to a quadratic increase in computational cost with longer input sequences. In the case of the prognostic information extraction task, the sole focus is on the global representation of the input sequence. This allowed the elimination of computationally intensive pairwise attentions among the input sequence, retaining only the relevant attentions between global queries and local keys. This modification effectively ensures that computational costs scale linearly with input length. Building upon this innovation, a multi-head attention framework for cancer survival prediction, named MHAttnSurv, was introduced, designed to work with whole slide images (WSIs) without the need for region-of-interest (ROI) annotations. In the MHAttnSurv framework, a backbone ResNet model is employed to extract features from randomly sampled WSI patches. These features are subsequently projected into values and keys, which are segmented into several chunks along with a learnable query vector. Within each chunk, parallel attention processes work concurrently to pinpoint discriminative regions, and the results from each attention map are concatenated to facilitate survival prediction.
 
 % Surformer
-This study proposes an innovative MIL neural network termed pattern-perceptive survival transformer (Surformer) \cite{atabansi2023survey}for WSI-based survival analysis. Briefly, Surformer comprises three components: a ratio-reserved cross-attention module (RRCA), a multi-head selfattention module (MHSA) , and a multi-head cross-attention module (MHCA), RRCA is the key module in Surformer. In the RRCA process, both 𝑝𝑔𝑙𝑜𝑏𝑎𝑙 and 𝑝𝑙𝑜𝑐𝑎𝑙𝑠 function as detectors to gather correlative features from WSIs.Here, the 𝑝𝑔𝑙𝑜𝑏𝑎𝑙 is similar to the classification token of Bert\cite{devlin2018bert} and targets to aggregate all valuable features for survival prediction.RRCA simultaneously detects global features and multiple pattern-specific local features through a learnable global prototype 𝑝𝑔𝑙𝑜𝑏𝑎𝑙 and multiple local prototypes 𝑝𝑙𝑜𝑐𝑎𝑙𝑠 and quantifies the patches correlative to each 𝑝𝑙𝑜𝑐𝑎𝑙𝑠 in the form of ratio factors (rfs). The ratio information is subsequentially embedded into the feature space for representation enhancement. 
+This study proposes an innovative MIL neural network termed pattern-perceptive survival transformer (Surformer) \cite{atabansi2023survey}for WSI-based survival analysis. Briefly, Surformer comprises three components: a ratio-reserved cross-attention module (RRCA), a multi-head selfattention module (MHSA) , and a multi-head cross-attention module (MHCA), RRCA is the key module in Surformer. In the RRCA process, both pgloabals and plocals function as detectors to gather correlative features from WSIs.Here, the pgloabal is similar to the classification token of Bert\cite{devlin2018bert} and targets to aggregate all valuable features for survival prediction.RRCA simultaneously detects global features and multiple pattern-specific local features through a learnable global prototype pgloabal and multiple local prototypes plocal and quantifies the patches correlative to each plocals in the form of ratio factors (rfs). The ratio information is subsequentially embedded into the feature space for representation enhancement. 
 
 % WSI-HSfeatures
 They proposed a survival prediction method \cite{li2023novel} based on tissue pathology and tissue region features extracted from WSIs. Use the DeepConvSurv model to extract histopathological features from plaques of actual tissue types (tumors, lymphocytes, stroma, and mucus), and extract tissue region features from the tissue map of WSI by using image processing techniques to locate and quantify tissue regions (tumors, cells, and stroma). Firstly, this method uses the DeepConvSurv model to extract the histopathological features of tumors, lymphocytes, stroma, and mucus. Secondly, by evaluating the area and proportion of tumors, lymphocytes, and stroma, tissue area features are retrieved from the tissue map. Thirdly, we use the extracted histopathological and tissue regional features to predict patient risk using six survival models.
@@ -433,6 +455,7 @@ The proposed fully automated prognostic tool based on histopathological images, 
 
 \subsection{Graph Neural Network}
 The extremely high gigapixel resolution of Whole Slide Images (WSI) requires researchers to divide them into smaller patches for analysis. Most of the previous work has primarily centered around aggregating images based on patches. But based on\cite{levy2020topological}, these methods may also overlook the crucial context between image patches and their neighbors for accurate predictions. Graphs are mathematical models depicting connections between pairs of elements. They are particularly effective for illustrating relationships between individual patches within a Whole Slide Image based on their spatial proximity or correlation. Currently, in risk prediction based on GNN through WSI images, many researchers have also achieved state-of-the-art results.
+Graphs are widely used to represent topological structures. However, modeling WSI as a graph is not simple. Cell-graph [6] are not feasible for WSI because they have a large number of units and many possible noise nodes. Therefore, most of the current work is based on WSI's patches to build graph models.
 
 %DeepGraphSurv
 %However, modeling a WSI as graph is not straightforward. Cell-graph [6] is infeasible for WSIs due to its huge number of cells and the many possible noisy nodes (isolated cells). The intermediate patch-wise features are a good option to construct graph with, balancing efficiency and granularity. However, applying CNNs on graphstructured data is still difficult.
@@ -442,7 +465,7 @@ DeepGraphSurv\cite{li2018graph}is the first GCN-based survival prediction model 
 Chen\cite{chen2020pathomic} utilized a Graph Convolutional Network (GCN) approach to extract morphometric cell features from histology images. This article proposes a method called Pathomic Fusion, which is a comprehensive framework for integrating histopathological and genomic features for cancer diagnosis and prognosis. In this approach, cells found within histological tissue are represented as nodes in a graph. These cells are initially identified using a deep learning-based nuclei segmentation algorithm, and connections between cells are established using the K-Nearest Neighbors (KNN) method. The features of each cell are initialized through a combination of handcrafted features and deep features obtained via contrastive predictive coding. The aggregation and combination functions employed in this approach are drawn from the GraphSAGE architecture, with the additional inclusion of node masking and hierarchical pooling strategies from SAGEPool. The primary objective of this method is to extract and learn cell morphological features from histological images.
 
 
-%Pact-CNN
+%Patch-CNN
 DeepGraphSurv proposed sampling patches in a WSI as nodes, followed by constructing edges between patches via feature similarity on the embedding space and using spectral convolutions. Alternatively, "Pathomic Fusion" constructed a cell-based graph for small image ROIs followed by spectral convolutions. However, in this approach for graph construction, GCNs are unable to learn context-aware features as message passing as feature interactions between adjacent image patches are not modeled.
 To enhance the modeling of feature interaction between adjacent image patches during message transmission, Chen \cite{chen2021whole} introduced a context aware, spatially resolved patch based graph convolutional network. This network hierarchically aggregates instance level histological features to capture local and global topological structures in the tumor microenvironment
 Their method uses Graph Convolutional Network (GCN), which iteratively aggregates and combines node features of different hidden layers through message passing. The message passing function of the network is adapted from DeepGCN\cite{li2019deepgcns}, including message construction, permutation invariant aggregation, and update functions. Unlike previous graph based methods, they create neighborhoods based on the nearest neighbors in the embedded space, and construct graphs in Euclidean space. This allows them to use spatial convolution to perform local neighborhood aggregation functions similar to convolutional neural networks (CNNs). Compared with other methods of connecting nodes through adjacent image patches, Patch-GCN has improved performance, allowing for learning coarse-grained to fine-grained topological structures in tumor microenvironment.This model is suitable for any weakly supervised learning task in computational pathology that uses slide level or patient level labels, which helps to gain a more comprehensive understanding of representation learning in the tumor microenvironment.
